@@ -33,12 +33,12 @@ class BTB() extends Area{
   val writeport = mem.writePortWithMask(ways)
   val memwrite = Flow(MemWriteCmdWithMask(mem, ways))
   
-  memwrite.valid
-  memwrite.address
-  memwrite.mask
-  for (data <- memwrite.data) {
-    data.BIA :=
-  }
+  // memwrite.valid
+  // memwrite.address
+  // memwrite.mask
+  // for (data <- memwrite.data) {
+  //   // data.BIA :=
+  // }
   writeport << memwrite
   // writeport.payload
   // writeport.
