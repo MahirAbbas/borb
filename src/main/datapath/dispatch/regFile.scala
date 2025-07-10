@@ -9,39 +9,37 @@ import spinal.lib.misc.pipeline._
 import borb.decode.Decoder._
 import spinal.lib.bus.regif.AccessType.RS
 
-case class RegFileWriteCmd() extends Bundle with IMasterSlave {
-  
+case class RegFileWriteCmd() extends Bundle with IMasterSlave{
   val valid = Bool()
   val address = UInt(32 bits)
   val data = Bits(32 bits)
 
-  override def asMaster() = {
-    out(valid, address, data)
+  override def asMaster(): Unit = {
+    in()
+    out(data, address, valid)
   }
 }
 
 case class RegFileReadCmd() extends Bundle with IMasterSlave {
-
   val valid = Bool()
   val address = UInt(32 bits)
   val data = Bits(32 bits)
 
-  override def asMaster() = {
-    out(address, valid)
+  override def asMaster(): Unit = {
     in(data)
+    out(address, valid)
+
   }
 }
 
-class regFileBus() extends Area {
-  val read = slave(RegFileReadCmd())
+class regFileBus() extends Bundle {
+  val read =  slave(RegFileReadCmd())
   val write = slave(RegFileWriteCmd())
 }
 
 object IntRegFile extends AreaObject {
-
   val RegFile_RS1 = Payload(Bits(64 bits))
   val RegFile_RS2 = Payload(Bits(64 bits))
-
 }
 
 abstract class RegFile {
