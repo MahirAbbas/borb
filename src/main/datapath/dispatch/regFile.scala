@@ -2,6 +2,7 @@ package borb.dispatch
 
 import spinal.core._
 import spinal.lib._
+import spinal.lib.misc.pipeline._
 
 case class RegFileWrite() extends Bundle with IMasterSlave {
   val valid   = Bool()
@@ -24,10 +25,11 @@ case class RegFileRead() extends Bundle with IMasterSlave {
   }
 }
 
+
 case class IntRegFile(readPorts: Int, writePorts: Int, dataWidth: Int) extends Component {
   val io = new Bundle {
     val reads = (0 to readPorts).map(e => slave(new RegFileRead()))
-    val writes = (0 to writePorts).map(e => new RegFileWrite())
+    val writes = (0 to writePorts).map(e => slave(new RegFileWrite()))
   }
 
   val mem = Mem.fill(32)(Bits(dataWidth bits))
