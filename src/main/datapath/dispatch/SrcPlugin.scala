@@ -4,12 +4,12 @@ package borb.dispatch
 import spinal.core._
 import spinal.lib._
 import spinal.lib.misc.pipeline._
-import borb.decode.Decoder._
+import borb.frontend.Decoder._
 import spinal.lib.logic.DecodingSpec
 import spinal.lib.logic.Masked
 
 import scala.collection.mutable
-import borb.decode.Imm_Select
+import borb.frontend.Imm_Select
 
 
 object SrcPlugin extends AreaObject { 
@@ -61,7 +61,7 @@ case class SrcPlugin(stage : CtrlLink) extends Area {
   val immsel = new stage.Area {
     val sext = Bits(64 bits).simPublic()
     sext.assignDontCare()
-    val imm = new IMM(borb.decode.Decoder.INSTRUCTION)
+    val imm = new IMM(borb.frontend.Decoder.INSTRUCTION)
     when(up.isFiring) {
       sext := up(IMMSEL).muxDc(
         Imm_Select.I_IMM -> imm.i_sext,
@@ -76,12 +76,12 @@ case class SrcPlugin(stage : CtrlLink) extends Area {
     RS2.assignDontCare()
     IMMED.assignDontCare()
     when(up.isFiring) {
-      down(RS1) := up(borb.decode.Decoder.RS1TYPE).muxDc(
-        borb.decode.REGFILE.RSTYPE.RS_INT -> IntRegFile.RegFile_RS1.asBits,
+      down(RS1) := up(borb.frontend.Decoder.RS1TYPE).muxDc(
+        borb.frontend.REGFILE.RSTYPE.RS_INT -> IntRegFile.RegFile_RS1.asBits,
       )
-      down(RS2) := up(borb.decode.Decoder.RS2TYPE).muxDc(
-        borb.decode.REGFILE.RSTYPE.IMMED  -> sext,
-        borb.decode.REGFILE.RSTYPE.RS_INT -> IntRegFile.RegFile_RS2.asBits,
+      down(RS2) := up(borb.frontend.Decoder.RS2TYPE).muxDc(
+        borb.frontend.REGFILE.RSTYPE.IMMED  -> sext,
+        borb.frontend.REGFILE.RSTYPE.RS_INT -> IntRegFile.RegFile_RS2.asBits,
       )
       down(IMMED) := sext
     }

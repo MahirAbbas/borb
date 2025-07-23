@@ -1,4 +1,4 @@
-package borb.decode
+package borb.frontend
 
 import spinal.core._
 

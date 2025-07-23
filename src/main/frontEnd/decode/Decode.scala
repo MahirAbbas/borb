@@ -1,4 +1,4 @@
-package borb.decode
+package borb.frontend
 
 import spinal.lib.misc.pipeline._
 import spinal.core._

@@ -6,10 +6,10 @@ import spinal.lib._
 import spinal.lib.sim._
 import spinal.lib.misc.pipeline._
 
-import borb.decode.Decoder._
-import borb.decode.Decoder
-import borb.decode.ExecutionUnitEnum
-import borb.decode.AluOp
+import borb.frontend.Decoder._
+import borb.frontend.Decoder
+import borb.frontend.ExecutionUnitEnum
+import borb.frontend.AluOp
 import borb.LsuL1.PC
 
 
@@ -71,7 +71,7 @@ case class HazardChecker(hzRange : Seq[CtrlLink]) extends Area {
   val isRs1Haz = hzRange.tail.map(e => 
     (hzRange.head(RS1) =/= 0) &&
     (hzRange.head(RS1) === e(RD)) &&
-    e.up(borb.decode.Decoder.RDTYPE) === (borb.decode.REGFILE.RDTYPE.RD_INT))
+    e.up(borb.frontend.Decoder.RDTYPE) === (borb.frontend.REGFILE.RDTYPE.RD_INT))
 
     // isRs1Haz.zipWithIndex.foreach(e => hzRange(e._2).haltWhen(e._1))
   hzRange.head.haltWhen(isRs1Haz.reduce(_ || _)).simPublic()
@@ -83,7 +83,7 @@ case class HazardChecker(hzRange : Seq[CtrlLink]) extends Area {
   val isRs2Haz = hzRange.tail.map(e => 
     (hzRange.head(RS2) =/= 0) &&
     (hzRange.head(RS2) === e(RD)) &&
-    e.up(borb.decode.Decoder.RDTYPE) === (borb.decode.REGFILE.RDTYPE.RD_INT))
+    e.up(borb.frontend.Decoder.RDTYPE) === (borb.frontend.REGFILE.RDTYPE.RD_INT))
     
   // isRs2Haz.zipWithIndex.foreach(e => hzRange(e._2).haltWhen(e._1))
 

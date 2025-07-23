@@ -1,8 +1,8 @@
 import spinal.core._
 import spinal.core.sim._
 import spinal.lib.misc.pipeline._
-import borb.decode.{Decoder, AluOp, ExecutionUnitEnum, REGFILE, Imm_Select, YESNO}
-import borb.decode.DecodeTable
+import borb.frontend.{Decoder, AluOp, ExecutionUnitEnum, REGFILE, Imm_Select, YESNO}
+import borb.frontend.DecodeTable
 import scala.util.Random
 
 object DecoderRandomTest extends App {
