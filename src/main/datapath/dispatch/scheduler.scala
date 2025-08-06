@@ -112,6 +112,7 @@ Schedule heuristic :
 object Dispatch extends AreaObject {
   val SENDTOALU = Payload(Bool())
   val SENDTOBRANCH = Payload(Bool())
+  val SENDTOAGU = Payload(Bool())
 }
 
 case class Dispatch(dispatchNode: CtrlLink) extends Area {
@@ -131,11 +132,15 @@ case class Dispatch(dispatchNode: CtrlLink) extends Area {
     // }
     down(SENDTOALU) := False
     down(SENDTOBRANCH) := False
+    down(SENDTOAGU) := False
     when(up(Decoder.EXECUTION_UNIT) === ExecutionUnitEnum.ALU) {
       down(SENDTOALU) := True
     }
     when(up(Decoder.EXECUTION_UNIT) === ExecutionUnitEnum.BR) {
       down(SENDTOBRANCH) := True
+    }
+    when(up(Decoder.EXECUTION_UNIT) === ExecutionUnitEnum.AGU) {
+      down(SENDTOAGU) := True
     }
 
   }

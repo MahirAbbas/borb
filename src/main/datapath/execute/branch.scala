@@ -4,13 +4,13 @@ package borb.execute
 import spinal.core._
 import spinal.lib._
 import spinal.lib.misc.pipeline._
-import borb.decode.AluOp
+import borb.frontend.AluOp
 import borb.LsuL1.PC
 import borb.LsuL1.JumpCmd
-import borb.decode.Decoder.ALUOP
+import borb.frontend.Decoder.ALUOP
 import borb.dispatch.SrcPlugin.IMMED
 import borb.execute.Execute.RESULT
-import borb.decode.ExecutionUnitEnum
+import borb.frontend.ExecutionUnitEnum
 import borb.LsuL1.Jumper
 
 // case class CtrlHazardThrowPipeline(decodeNode : CtrlLink, hzRange : Seq[CtrlLink], pc : PC) extends Area {
@@ -30,14 +30,14 @@ import borb.LsuL1.Jumper
 // }
 
 
-case class Branch(node : CtrlLink, pc : PC) extends Area with FunctionalUnit {
+case class Branch(node : CtrlLink, pc : PC) extends Area {
   import borb.LsuL1.PC._
   
   val jumpCmd = Flow(borb.LsuL1.JumpCmd())
   
   pc.jumpCmd << jumpCmd
   
-  override val FUType = ExecutionUnitEnum.BR
+  // override val FUType = ExecutionUnitEnum.BR
 
   val SRC1 = borb.dispatch.SrcPlugin.RS1
   val SRC2 = borb.dispatch.SrcPlugin.RS2
@@ -61,7 +61,7 @@ case class Branch(node : CtrlLink, pc : PC) extends Area with FunctionalUnit {
         AluOp.bltu -> (SRC1.asUInt <= SRC2.asUInt),
       )
     }
-    when(up(borb.decode.Decoder.ALUOP) === AluOp.jal || up(borb.decode.Decoder.ALUOP) === AluOp.jalr) {
+    when(up(borb.frontend.Decoder.ALUOP) === AluOp.jal || up(borb.frontend.Decoder.ALUOP) === AluOp.jalr) {
       doBranch := True
       RESULT := PCPLUS4.asBits
     }

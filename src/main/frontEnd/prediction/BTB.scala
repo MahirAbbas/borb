@@ -30,7 +30,7 @@ class BTB() extends Area{
   val predict = UInt(2 bits)
   
   val mem = Mem.fill(size)(Vec.fill(ways)(BtbEntry(10)))
-  val writeport = mem.writePortWithMask(ways)
+  // val RamWrite = mem.RamWriteWithMask(ways)
   val memwrite = Flow(MemWriteCmdWithMask(mem, ways))
   
   // memwrite.valid
@@ -39,8 +39,8 @@ class BTB() extends Area{
   // for (data <- memwrite.data) {
   //   // data.BIA :=
   // }
-  writeport << memwrite
-  // writeport.payload
-  // writeport.
+  // RamWrite << memwrite
+  // RamWrite.payload
+  // RamWrite.
   
 }

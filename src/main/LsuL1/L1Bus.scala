@@ -4,7 +4,7 @@ package borb.LsuL1
 import spinal.core._
 import spinal.lib._
 import spinal.lib.misc.pipeline._
-import borb.decode.Decoder.INSTRUCTION
+import borb.frontend.Decoder.INSTRUCTION
 
 case class RamFetchCmd() extends Bundle {
   val address = UInt(64 bits)

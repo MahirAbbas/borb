@@ -3,24 +3,24 @@ package borb.execute
 import spinal.core._
 import spinal.lib._
 import spinal.lib.misc.pipeline._
-import borb.decode.Decoder._
-import borb.decode.YESNO
-import borb.decode.Imm_Select
-import borb.decode.ExecutionUnitEnum.ALU
+import borb.frontend.Decoder._
+import borb.frontend.YESNO
+import borb.frontend.Imm_Select
+import borb.frontend.ExecutionUnitEnum.ALU
 import borb.dispatch.SrcPlugin.IMMED
 
 
-case class IntAlu(aluNode : CtrlLink) extends Area with FunctionalUnit{
+case class IntAlu(aluNode : CtrlLink) extends Area {
   val SRC1 = borb.dispatch.SrcPlugin.RS1
   val SRC2 = borb.dispatch.SrcPlugin.RS2
   
-  override val FUType = borb.decode.ExecutionUnitEnum.ALU
+  // override val FUType = borb.frontend.ExecutionUnitEnum.ALU
   import borb.execute.Execute._
   import borb.LsuL1.PC.PCVal
   
   val aluNodeStage = new aluNode.Area {
       import borb.dispatch.Dispatch._
-      import borb.decode.AluOp
+      import borb.frontend.AluOp
       val result = Bits(64 bits)
       result.assignDontCare()
       when(up(borb.dispatch.Dispatch.SENDTOALU) === True && up.isFiring) {

@@ -3,19 +3,18 @@ package borb.execute
 import spinal.core._
 import spinal.lib.misc.pipeline.CtrlLink
 import borb.LsuL1._
-import borb.decode.Decoder.USE_STQ
-import borb.decode.YESNO.{Y => Y}
-import borb.decode.Decoder.USE_LDQ
+import borb.frontend.Decoder.USE_STQ
+import borb.frontend.YESNO.{Y => Y}
+import borb.frontend.Decoder.USE_LDQ
 import borb.LsuL1.RamStoreCmd
-import borb.decode.ExecutionUnitEnum
+import borb.frontend.ExecutionUnitEnum._
 
 
 
 
-case class AGU(node : CtrlLink) extends Area with FunctionalUnit{
+case class AGU(node : CtrlLink) extends Area {
   import borb.dispatch.SrcPlugin._
   
-  override val FUType = ExecutionUnitEnum.AGU
 
   val logic = new node.Area {
     // while(!loaded) {

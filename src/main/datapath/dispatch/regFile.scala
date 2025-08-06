@@ -3,6 +3,8 @@ package borb.dispatch
 import spinal.core._
 import spinal.lib._
 import spinal.lib.misc.pipeline._
+import spinal.lib.misc.plugin._
+import scala.collection.mutable.ArrayBuffer
 
 case class RegFileWrite() extends Bundle with IMasterSlave {
   val valid   = Bool()
@@ -26,16 +28,30 @@ case class RegFileRead() extends Bundle with IMasterSlave {
 }
 
 
-case class IntRegFile(readPorts: Int, writePorts: Int, dataWidth: Int) extends Component {
+object IntRegFile extends AreaObject {
+  val RegFile_RS1 = Payload(Bits(64 bits))
+  val RegFile_RS2 = Payload(Bits(64 bits))
+}
+
+
+case class IntRegFile(RamReads: Int, RamWrites: Int, dataWidth: Int) extends Component {
+  
+  
+  
   val io = new Bundle {
-    val reads = (0 to readPorts).map(e => slave(new RegFileRead()))
-    val writes = (0 to writePorts).map(e => slave(new RegFileWrite()))
+    val reads = (0 to RamReads).map(e => slave(new RegFileRead()))
+    val writes = (0 to RamWrites).map(e => slave(new RegFileWrite()))
   }
+  
+  var numExecutionUnits = 0
+  
+  def addPort = numExecutionUnits += 1
+  
 
   val mem = Mem.fill(32)(Bits(dataWidth bits))
 
   // Read logic
-  // for (i <- 0 until readPorts) {
+  // for (i <- 0 until RamReads) {
   //   when(io.reads.addresses(i) === 0) {
   //     io.reads.data(i) := 0
   //   } otherwise {
