@@ -7,9 +7,15 @@ import scala.collection.mutable.ArrayBuffer
 import spinal.lib.misc.plugin.FiberPlugin
 import spinal.core.fiber.Fiber
 import borb.dispatch._
+import _root_.borb.common.MicroCode
 
 trait FunctionalUnit {
-  def getUops: Seq[AluOp.E]
+  val supportedUOPS : ArrayBuffer[MicroCode.E]
+  def getUops: ArrayBuffer[MicroCode.E]
+  // def add: MicroCode.E
+  def add(op : MicroCode.E) : Unit = {
+    supportedUOPS += op
+  }
 }
 
 trait ExecutionUnitTemplate {

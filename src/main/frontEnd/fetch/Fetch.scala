@@ -10,13 +10,23 @@ import borb.frontend.Decoder.INSTRUCTION
 
 case class Fetch(stage : CtrlLink) extends Area {
   val io = new Bundle {
-    val readCmd =  RamRead(64, 32)
+    val readCmd =  out port RamRead(64, 32)
     val instruction = in(Bits(32 bits))
   }
+
+  val is_reading_from_ram = Reg(Bool()) init False
+  
   
   val logic = new stage.Area {
-    io.readCmd.address := up(PC.PC)
+    when(up.isFiring) {
+      io.readCmd.address := up(PC.PC)
+      io.readCmd.valid := True
+      when((io.readCmd.valid && io.readCmd.ready) === True) {
+        is_reading_from_ram := True
+      }
+    }
     INSTRUCTION := io.instruction
+
   }
 
 }

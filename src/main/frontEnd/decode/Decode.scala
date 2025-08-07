@@ -9,6 +9,7 @@ import scala.collection.mutable
 // import borb.decode.Decoder._
 import spinal.lib.cpu.riscv.impl.Alu
 import spinal.lib.logic.Symplify
+import _root_.borb.common
 
 
 object Decoder extends AreaObject {
@@ -16,6 +17,7 @@ object Decoder extends AreaObject {
   val INSTRUCTION = Payload(Bits(32 bits)) 
 
   val LEGAL          = Payload(YESNO())
+  val MicroCode      = Payload(common.MicroCode())
   val IS_FP          = Payload(YESNO())
   val EXECUTION_UNIT = Payload(ExecutionUnitEnum())
   val RDTYPE         = Payload(REGFILE.RDTYPE())
@@ -79,7 +81,7 @@ case class Decoder(stage : CtrlLink) extends Area {
 
   
   val all = mutable.LinkedHashSet[Masked]()
-  val payloads = Seq(LEGAL, IS_FP, EXECUTION_UNIT , RDTYPE, RS1TYPE, RS2TYPE, FSR3EN, IMMSEL, ALUOP , IS_BR , IS_W, USE_LDQ, USE_STQ )
+  val payloads = Seq(LEGAL, MicroCode,IS_FP, EXECUTION_UNIT , RDTYPE, RS1TYPE, RS2TYPE, FSR3EN, IMMSEL, ALUOP , IS_BR , IS_W, USE_LDQ, USE_STQ )
 
   val specs = payloads.map(k => new DecodingSpec(k)).zip(payloads)
 

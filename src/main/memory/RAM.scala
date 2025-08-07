@@ -30,40 +30,39 @@ case class RamWrite(addressWidth: Int, dataWidth: Int) extends Bundle with IMast
 }
 
 case class RamIO() extends Bundle {
-  val reads  = slave(RamRead(64, 64))
-  val writes = slave(RamWrite(64, 64))
+  val reads  = slave(RamRead(addressWidth = 64, dataWidth = 32))
+  val writes = slave(RamWrite(addressWidth = 64, dataWidth = 32))
 }
 
 class UnifiedRam(addressWidth: Int, dataWidth: Int) extends Component {
-  val io = new Bundle {
-    val i_port = slave(RamRead(addressWidth, 32)) // Instruction port is 32-bit
-    val d_port_read = slave(RamRead(addressWidth, dataWidth)) // Data port is 64-bit
-    val d_port_write = slave(RamWrite(addressWidth, dataWidth)) // Data port is 64-bit
-  }
+  //TODO: Create ports on demand, which are blocking, i.e., if one port is reading/writing, the other can't
+  // Vec of writes/reads that plugins add to? maybe make add function? like add read/write port?
+  //
+
+  val io = new RamIO()
 
   // The memory itself stores 64-bit words.
   // Addresses from the CPU are byte addresses. The memory is 8-byte (64-bit) word addressable.
   // So we use the upper bits of the address to select the word.
-  val memory = Mem(Bits(dataWidth bits), wordCount = 1 << (addressWidth - 3))
+  val memory = Mem(Bits(dataWidth bits), wordCount = 4 KiB)
   
-  val check = new HardMap()
+  
+  //val check = new HardMap()
 
   // Instruction Fetch Port
-  // Read a full 64-bit word from memory.
-  val i_wordAddress = io.i_port.address >> 3
-  val i_fullWord = memory.readSync(i_wordAddress)
-  // The instruction can be in the upper or lower half of the 64-bit word.
-  // RISC-V instructions are 32-bit aligned, so address bit 2 selects the half-word.
-  io.i_port.data := Mux(io.i_port.address(2), i_fullWord(63 downto 32), i_fullWord(31 downto 0))
 
-  // Data Port Read
-  val d_wordAddress = io.d_port_read.address >> 3
-  io.d_port_read.data := memory.readSync(d_wordAddress)
+  io.reads.ready := True
+  io.writes.ready := True
+  io.reads.data := memory.readSync(io.reads.address, enable = io.reads.valid)
 
-  // Data Port Write
-  when(io.d_port_write.enable) {
-    // This simple model doesn't support byte-level writes (yet), only full 64-bit words.
-    val d_writeWordAddress = io.d_port_write.address >> 3
-    memory.write(d_writeWordAddress, io.d_port_write.data)
+  when(io.writes.valid) {
+    io.reads.ready := False
   }
+
+  when(io.reads.valid) {
+    io.writes.ready := False
+  }
+
+  memory.write(address = io.writes.address, data = io.writes.data, enable = io.writes.valid)
+
 }
