@@ -10,8 +10,14 @@ import borb.memory.UnifiedRam
 import borb.datapath.execute.lsu.Memory
 
 class Borb extends Component {
+  // PIPELINE
+  // FETCH
+  // DECODE
+  // EXECUTE
+  // WRITEBACK
+  // MEMORY
   val pipeline = new StageCtrlPipeline()
-  
+
   val ram = new UnifiedRam(64, 64)
 
   val pc = new PC(pipeline.ctrl(0))
@@ -37,7 +43,6 @@ class Borb extends Component {
   // memory.io.writeEnable := execute.memory_write_enable
   // ram.io.d_port_read <> memory.io.read
   // ram.io.d_port_write <> memory.io.write
-
 
   Decoder.INSTRUCTION := fetch.io.instruction
   val regfile = new IntRegFile(RamReads = 1, RamWrites = 1, dataWidth = 64)

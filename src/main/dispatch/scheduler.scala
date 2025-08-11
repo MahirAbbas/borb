@@ -12,7 +12,6 @@ import borb.frontend.ExecutionUnitEnum
 import borb.frontend.AluOp
 import borb.LsuL1.PC
 
-
 // object Dispatch extends AreaObject {
 //   val alu_valid = Payload(Bool())
 // }
@@ -40,14 +39,12 @@ How to detect RD->RSx hazards for a given candidate:
 
  */
 
-
-
-case class HazardChecker(hzRange : Seq[CtrlLink]) extends Area {
+case class HazardChecker(hzRange: Seq[CtrlLink]) extends Area {
   // RAW Hazards
   // WAW hazard
   // Control hazards (branch not yet resolved)
   // Structural hazard
-  
+
   // hzRange = rfRead -> rfWriteback
 
   // WAR hazard
@@ -61,38 +58,43 @@ case class HazardChecker(hzRange : Seq[CtrlLink]) extends Area {
   // if match, stallIt/Upper until hazard fixed
 
   // RAW hazard
-  // if RD is hzRange(0) === RSx in hzRange(1 .. n-1) 
+  // if RD is hzRange(0) === RSx in hzRange(1 .. n-1)
 
   // hzRange.head(RD)
   // val rs1Hazard = for (stage <- hzRange.tail) {
-    
+
   // }
 
-  val isRs1Haz = hzRange.tail.map(e => 
-    (hzRange.head(RS1) =/= 0) &&
-    (hzRange.head(RS1) === e(RD)) &&
-    e.up(borb.frontend.Decoder.RDTYPE) === (borb.frontend.REGFILE.RDTYPE.RD_INT))
+  val isRs1Haz = hzRange.tail.map(e =>
+    (hzRange.head(RS1_ADDR) =/= 0) &&
+      (hzRange.head(RS1_ADDR) === e(RD_ADDR)) &&
+      e.up(
+        borb.frontend.Decoder.RDTYPE
+      ) === (borb.frontend.REGFILE.RDTYPE.RD_INT)
+  )
 
-    // isRs1Haz.zipWithIndex.foreach(e => hzRange(e._2).haltWhen(e._1))
+  // isRs1Haz.zipWithIndex.foreach(e => hzRange(e._2).haltWhen(e._1))
   hzRange.head.haltWhen(isRs1Haz.reduce(_ || _)).simPublic()
   // when (isRs1Haz.reduce(_ || _) simPublic()) {
-    // hzRange.head.haltIt() 
-    // hzRange.head.isReady := False
+  // hzRange.head.haltIt()
+  // hzRange.head.isReady := False
   // }
 
-  val isRs2Haz = hzRange.tail.map(e => 
-    (hzRange.head(RS2) =/= 0) &&
-    (hzRange.head(RS2) === e(RD)) &&
-    e.up(borb.frontend.Decoder.RDTYPE) === (borb.frontend.REGFILE.RDTYPE.RD_INT))
-    
+  val isRs2Haz = hzRange.tail.map(e =>
+    (hzRange.head(RS2_ADDR) =/= 0) &&
+      (hzRange.head(RS2_ADDR) === e(RD_ADDR)) &&
+      e.up(
+        borb.frontend.Decoder.RDTYPE
+      ) === (borb.frontend.REGFILE.RDTYPE.RD_INT)
+  )
+
   // isRs2Haz.zipWithIndex.foreach(e => hzRange(e._2).haltWhen(e._1))
 
-  when (isRs2Haz.reduce(_ || _).simPublic()) {
+  when(isRs2Haz.reduce(_ || _).simPublic()) {
     hzRange.head.haltIt()
   }
 
 }
-
 
 /*
 How to check if a instruction can schedule :
@@ -106,8 +108,7 @@ Schedule heuristic :
 - Check which pipeline could schedule it (free && compatible)
 - Select the pipeline which the highest priority (to avoid using the one which can do load and store, for instance)
 - If the slot can't be schedule, disable all following ones with same HART_ID
-*/
-
+ */
 
 object Dispatch extends AreaObject {
   val SENDTOALU = Payload(Bool())
@@ -117,10 +118,9 @@ object Dispatch extends AreaObject {
 
 case class Dispatch(dispatchNode: CtrlLink) extends Area {
 
-  //import borb.decode.Decoder._
+  // import borb.decode.Decoder._
   import Dispatch._
   // val op = uop.toStream
-
 
   // if uop match EU uop
   // check hazards
@@ -128,7 +128,7 @@ case class Dispatch(dispatchNode: CtrlLink) extends Area {
 
   val logic = new dispatchNode.Area {
     // when(up.isValid) {
-    //   eus.foreach(f => f.SEL := False) 
+    //   eus.foreach(f => f.SEL := False)
     // }
     down(SENDTOALU) := False
     down(SENDTOBRANCH) := False
@@ -157,8 +157,6 @@ case class Dispatch(dispatchNode: CtrlLink) extends Area {
   //   eus.node.isMoving()
   // }
 
-
-  
   // val nodeArea = new dispatchNode.Area {
   //   down(alu_valid) := False
 
@@ -169,11 +167,11 @@ case class Dispatch(dispatchNode: CtrlLink) extends Area {
   //     down(alu_valid) := True
 
   //   }
-    
+
   // }
 
   // what EU does it want
 
   // when not hazard, and EU free
-  
+
 }
