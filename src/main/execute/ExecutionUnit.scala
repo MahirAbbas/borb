@@ -41,23 +41,23 @@ trait writeBackService {
   def createPort: Unit
 }
 
-class ExecutionUnit(regfile: IntRegFile) extends ExecutionUnitTemplate {
-
-  val writeback = new WriteBackPlugin()
-
-  class WriteBackPlugin extends FiberPlugin {
-    val writePort = master(new RegFileWrite())
-    regfile.newWrite()
-
-    def write(wbStage: CtrlLink, data: Bits) = {
-
-      writePort.valid := True
-      writePort.address := wbStage.up(RD_ADDR).asUInt
-      writePort.data := data
-    }
-  }
-
-  // override def writeBack(data: Bits): Unit = {
-  //   writeback.write(data)
-  // }
-}
+// class ExecutionUnit(regfile: IntRegFile) extends ExecutionUnitTemplate {
+//
+//   val writeback = new WriteBackPlugin()
+//
+//   class WriteBackPlugin extends FiberPlugin {
+//     val writePort = master(new RegFileWrite())
+//     regfile.newWrite()
+//
+//     def write(wbStage: CtrlLink, data: Bits) = {
+//
+//       writePort.valid := True
+//       writePort.address := wbStage.up(RD_ADDR).asUInt
+//       writePort.data := data
+//     }
+//   }
+//
+//   // override def writeBack(data: Bits): Unit = {
+//   //   writeback.write(data)
+//   // }
+// }

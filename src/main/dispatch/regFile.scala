@@ -34,8 +34,8 @@ object IntRegFile extends AreaObject {
 
 case class IntRegFile(dataWidth: Int) extends Component {
 
-  val readers: ArrayBuffer[RegFileRead]
-  val writers: ArrayBuffer[RegFileWrite]
+  val readers: ArrayBuffer[RegFileRead] = ???
+  val writers: ArrayBuffer[RegFileWrite] = ???
 
   def newRead() = {
     readers += new RegFileRead()

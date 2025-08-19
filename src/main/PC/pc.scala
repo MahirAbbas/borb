@@ -27,6 +27,7 @@ object PC extends AreaObject {
 }
 
 case class PC(stage: CtrlLink, withCompressed: Boolean = false) extends Area {
+
   val jump = Flow(JumpCmd())
   val flush = Flow(FlushCmd())
   val exception = Flow(ExceptionCmd())
@@ -34,30 +35,33 @@ case class PC(stage: CtrlLink, withCompressed: Boolean = false) extends Area {
   // allows for future support of 'C' extension
   val fetch_offset = withCompressed generate in(UInt(3 bits))
 
-  val PC_cur = Reg(UInt(64 bits)) init (0)
-  val PC_next = Reg(UInt(64 bits)) init (4)
+  val PC_cur = Reg(UInt(64 bits)).init(0)
 
   // Control flow change interfaces
-
-  val nextPC = UInt(64 bits)
 
   val logic = new stage.Area {
 
     val sequentialNextPc =
       if (withCompressed) PC_cur + fetch_offset else PC_cur + 4
-    nextPC := sequentialNextPc // Default: sequential
 
     // Priority: exception > flush > jump > sequential
     when(exception.valid) {
-      nextPC := exception.payload.vector
+      sequentialNextPc := exception.payload.vector
     }.elsewhen(flush.valid) {
-      nextPC := flush.payload.address
+      sequentialNextPc := flush.payload.address
     }.elsewhen(jump.valid) {
-      nextPC := jump.payload.target
+      sequentialNextPc := jump.payload.target
     }
 
-    PC_cur := nextPC
     PC.PC := PC_cur
-    PC.FLUSH := jump.valid || flush.valid || exception.valid
+    val isDownReady = stage.isReady
+    val isDownValid = stage.isValid
+    when(down.isReady) {
+      PC_cur := PC_cur + 4
+      down(PC.PC) := PC_cur
+    }
+
+
+    // PC.FLUSH := jump.valid || flush.valid || exception.valid
   }
 }

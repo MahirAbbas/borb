@@ -6,7 +6,7 @@ import borb.LsuL1._
 import borb.frontend.Decoder.USE_STQ
 import borb.frontend.YESNO.{Y => Y}
 import borb.frontend.Decoder.USE_LDQ
-import borb.LsuL1.RamStoreCmd
+// import borb.LsuL1.RamStoreCmd
 import borb.frontend.ExecutionUnitEnum._
 
 // case class AGU(node : CtrlLink) extends Area {
