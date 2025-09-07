@@ -16,7 +16,6 @@ object Decoder extends AreaObject {
   val INSTRUCTION = Payload(Bits(32 bits))
 
   val LEGAL = Payload(YESNO())
-  val MicroCode = Payload(common.MicroCode())
   val IS_FP = Payload(YESNO())
   val EXECUTION_UNIT = Payload(ExecutionUnitEnum())
   val RDTYPE = Payload(REGFILE.RDTYPE())
@@ -24,7 +23,7 @@ object Decoder extends AreaObject {
   val RS2TYPE = Payload(REGFILE.RSTYPE())
   val FSR3EN = Payload(YESNO())
   val IMMSEL = Payload(Imm_Select())
-  val ALUOP = Payload(AluOp())
+  val MicroCode = Payload(common.MicroCode())
   val IS_BR = Payload(YESNO())
   val IS_W = Payload(YESNO())
   val USE_LDQ = Payload(YESNO())
@@ -77,7 +76,6 @@ case class Decoder(stage: CtrlLink) extends Area {
   val all = mutable.LinkedHashSet[Masked]()
   val payloads = Seq(
     LEGAL,
-    MicroCode,
     IS_FP,
     EXECUTION_UNIT,
     RDTYPE,
@@ -85,7 +83,7 @@ case class Decoder(stage: CtrlLink) extends Area {
     RS2TYPE,
     FSR3EN,
     IMMSEL,
-    ALUOP,
+    MicroCode,
     IS_BR,
     IS_W,
     USE_LDQ,

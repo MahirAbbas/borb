@@ -5,17 +5,11 @@ import spinal.lib._
 import spinal.lib.misc.pipeline._
 // import borb.memory.RamRead
 
-import borb.fetch.PC
+import borb.frontend.PC
 import borb.frontend.Decoder.INSTRUCTION
 import borb.memory._
-import spinal.core.sim._
 
-object Fetch {
-  val PC_delayed = Payload(UInt(64 bits))
-}
-
-case class Fetch(stage: CtrlLink,addressWidth: Int,dataWidth: Int) extends Area {
-  import Fetch._
+case class Fetch(stage: CtrlLink,addressWidth: Int,dataWidth: Int, pcStage: CtrlLink) extends Area {
   val io = new Bundle {
     val readCmd = ((new RamFetchBus(addressWidth, dataWidth, idWidth = 16)))
   }
@@ -23,13 +17,12 @@ case class Fetch(stage: CtrlLink,addressWidth: Int,dataWidth: Int) extends Area 
   // val waitingForRsp = Reg(Bool()) init False
   val logic = new stage.Area {
     val pcReg = Reg(UInt(64 bits))
-    pcReg.simPublic()
     pcReg := PC.PC
     io.readCmd.cmd.valid := False
     io.readCmd.cmd.payload.address.assignDontCare()
+    val PC_delayed = Payload(UInt(64 bits))
 
     INSTRUCTION.assignDontCare()
-    PC_delayed.assignDontCare()
 
     val isUpValid = stage.isValid
     val isUpReady = stage.isReady
@@ -49,7 +42,7 @@ case class Fetch(stage: CtrlLink,addressWidth: Int,dataWidth: Int) extends Area 
     when(io.readCmd.rsp.valid) {
       // waitingForRsp := False
       INSTRUCTION := io.readCmd.rsp.data
-      PC_delayed := pcReg
+      // PC_delayed := pcReg
 
     }
   }

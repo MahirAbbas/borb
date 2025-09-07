@@ -8,7 +8,7 @@ import spinal.lib._
 
 object PC_formal_increment extends App {
   import spinal.core.formal._
-  import borb.frontend.PC.PC
+  import borb.fetch.PC.PC
   FormalConfig
     .withBMC(100)
     .doVerify(new Component {
@@ -18,7 +18,7 @@ object PC_formal_increment extends App {
           val pipeline = new StageCtrlPipeline
           val stage = pipeline.ctrl(0)
           val read_stage = pipeline.ctrl(1)
-          val pc = new PC(stage)
+          val pc = new borb.fetch.PC(stage)
 
           // Expose PC output
           pc.exception.setIdle()
@@ -39,9 +39,10 @@ object PC_formal_increment extends App {
     })
 }
 object PCTest extends App {
-  import borb.frontend.PC.PC
+  import borb.fetch.PC.PC
   SimConfig.withWave
     .compile(new Component {
+      import borb.fetch._
 
       val io = new Bundle {
         val in_jump = in(Flow(JumpCmd()))
@@ -57,7 +58,7 @@ object PCTest extends App {
       // Expose PC output
       val pc_out = out(UInt(64 bits))
       val read = new stage.Area {
-        pc_out := PC
+        pc_out := borb.fetch.PC.PC
       }
 
       // Connect the top-level IO to the PC module's inputs

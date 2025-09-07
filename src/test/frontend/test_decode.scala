@@ -4,6 +4,7 @@ import spinal.lib.misc.pipeline._
 import borb.frontend.{Decoder, AluOp, ExecutionUnitEnum, REGFILE, Imm_Select, YESNO}
 import borb.frontend.DecodeTable
 import scala.util.Random
+import borb.common.MicroCode
 
 object DecoderRandomTest extends App {
   SimConfig.withWave.compile(new Component {
@@ -17,7 +18,7 @@ object DecoderRandomTest extends App {
     val rs2type        = out port REGFILE.RSTYPE()
     val fsr3en         = out port YESNO()
     val immsel         = out port Imm_Select()
-    val aluop          = out port AluOp()
+    val microcode      = out port MicroCode()
     val is_br          = out port YESNO()
     val is_w           = out port YESNO()
     val use_ldq        = out port YESNO()
@@ -36,7 +37,7 @@ object DecoderRandomTest extends App {
     rs2type        := pipeline.ctrl(2)(Decoder.RS2TYPE)
     fsr3en         := pipeline.ctrl(2)(Decoder.FSR3EN)
     immsel         := pipeline.ctrl(2)(Decoder.IMMSEL)
-    aluop          := pipeline.ctrl(2)(Decoder.ALUOP)
+    microcode      := pipeline.ctrl(2)(Decoder.MicroCode)
     is_br          := pipeline.ctrl(2)(Decoder.IS_BR)
     is_w           := pipeline.ctrl(2)(Decoder.IS_W)
     use_ldq        := pipeline.ctrl(2)(Decoder.USE_LDQ)
@@ -63,7 +64,7 @@ object DecoderRandomTest extends App {
       assert(dut.rs2type.toEnum == expected(5), s"RS2TYPE mismatch for $instr: got ${dut.rs2type.toEnum}, expected ${expected(5)}")
       assert(dut.fsr3en.toEnum == expected(6), s"FSR3EN mismatch for $instr: got ${dut.fsr3en.toEnum}, expected ${expected(6)}")
       assert(dut.immsel.toEnum == expected(7), s"IMMSEL mismatch for $instr: got ${dut.immsel.toEnum}, expected ${expected(7)}")
-      assert(dut.aluop.toEnum == expected(8), s"ALUOP mismatch for $instr: got ${dut.aluop.toEnum}, expected ${expected(8)}")
+      assert(dut.microcode.toEnum == expected(8), s"Microcode mismatch for $instr: got ${dut.microcode.toEnum}, expected ${expected(8)}")
       assert(dut.is_br.toEnum == expected(9), s"IS_BR mismatch for $instr: got ${dut.is_br.toEnum}, expected ${expected(9)}")
       assert(dut.is_w.toEnum == expected(10), s"IS_W mismatch for $instr: got ${dut.is_w.toEnum}, expected ${expected(10)}")
       assert(dut.use_ldq.toEnum == expected(11), s"USE_LDQ mismatch for $instr: got ${dut.use_ldq.toEnum}, expected ${expected(11)}")
