@@ -154,7 +154,25 @@ object DecodeTable {
   import Imm_Select._
   import YESNO._
   import borb.common.MicroCode._
-  val default_decode =  Seq(N,N, ExecutionUnitEnum.NA, RDTYPE.RD_NA, RSTYPE.RS_NA, RSTYPE.RS_NA, N, N_IMM, uopNOP, N, N)
+
+   //                                                                                  frs3_en
+   //         valid?                                                                   |    imm sel         is_br
+   //            | is fp inst?                                                         |    |      micro-code |    uses_ldq
+   //            | |                                     rs1 regtype                   |    |        |        | is_w|  uses_stq        is unique? (clear pipeline for it)
+   //            | |                                          |           rs2 type     |    |        |        |  |  |  |  is_amo       |  flush on commit
+   //            | |       func unit                          |               |        |    |        |        |  |  |  |  |            |  |  csr cmd
+   //            | |       |                                  |               |        |    |        |        |  |  |  |  |            |  |  |      fcn_dw                      swap12         fma
+   //            | |       |                  dst             |               |        |    |        |        |  |  |  |  |  mem       |  |  |      |       fcn_op              | swap32       | div
+   //            | |       |                  regtype         |               |        |    |        |        |  |  |  |  |  cmd       |  |  |      |       |                   | | typeTagIn  | | sqrt
+   //            | |       |                  |               |               |        |    |        |        |  |  |  |  |  |         |  |  |      |       |        ldst       | | | typeTagOut | | wflags
+   //            | |       |                  |               |               |        |    |        |        |  |  |  |  |  |         |  |  |      |       |        | wen      | | | | from_int | | |
+   //            | |       |                  |               |               |        |    |        |        |  |  |  |  |  |         |  |  |      |       |        | | ren1   | | | | | to_int | | |
+   //            | |       |                  |               |               |        |    |        |        |  |  |  |  |  |         |  |  |      |       |        | | | ren2 | | | | | | fast | | |
+   //            | |       |                  |               |               |        |    |        |        |  |  |  |  |  |         |  |  |      |       |        | | | | ren3 | | | | | |  | | | |
+   //            | |       |                  |               |               |        |    |        |        |  |  |  |  |  |         |  |  |      |       |        | | | | |  | | | | | | |  | | | |
+   //       List(N,N, ExecutionUnit.FPU, RDTYPE.RD_INT, RSTYPE.RS_INT, RSTYPE.RS_INT,  N, I_IMM, uopADD,   N, N  X, X, X, M_X,      N, X, CSR.X, DW_X  , FN_X   , X,X,X,X,X, X,X,X,X,X,X,X, X,X,X,X)
+  val nop =  Seq(N,N, ExecutionUnitEnum.NA, RDTYPE.RD_NA, RSTYPE.RS_NA, RSTYPE.RS_NA, N, N_IMM,      uopNOP,  N, N, N, N)
+
   val X_table: Seq[(MaskedLiteral, Seq[Any])] = Seq(
               //                                                             frs3_en
               //               is val inst?                                  |  imm sel

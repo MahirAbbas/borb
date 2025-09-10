@@ -101,6 +101,10 @@ case class Decoder(stage: CtrlLink) extends Area {
     }
   }
 
+  //set defaults for sigs as nop
+  specs.zipWithIndex.foreach(e => e._1._1.setDefault(Masked(nop(e._2))))
+
+
   import spinal.core.sim._
   val trap = new stage.Area {}
 
