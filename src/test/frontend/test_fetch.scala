@@ -86,7 +86,7 @@ object test_fetch extends App {
           // println(s"Data should be ${data.toLong.toHexString}, got ${dut.readHere.instr.toBigInt.toLong.toHexString} at ${dut.readHere.pc.toBigInt.toLong}")
           // println(s"Data should be ${data.toLong.toHexString}, got ${dut.readHere.instr.toBigInt.toLong.toHexString}")
           println(s"Data should be ${data.toLong.toHexString}, got ${dut.readHere.instr.toBigInt.toLong.toHexString}")
-          print(s"at ${dut.readHere.pc.toBigInt.toLong}")
+          print(s"at ${dut.readHere.pc.toBigInt}")
           // print(s"at ${dut.readHere.pc}")
         }
 
