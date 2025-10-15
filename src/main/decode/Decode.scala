@@ -59,14 +59,14 @@ object YESNO extends SpinalEnum {
   val Y, N = newElement()
 }
 
-object AluOp extends SpinalEnum(binarySequential) {
-  val add, sub, sll, srl, sra, or, xor, slt, sltu, and, na, lui = newElement()
-  val addw, sllw, sraw, srlw, subw = newElement()
-  val jal, jalr = newElement()
-  val beq, bne, bge, bgeu, blt, bltu = newElement()
-  val auipc = newElement()
-
-}
+// object AluOp extends SpinalEnum(binarySequential) {
+//   val add, sub, sll, srl, sra, or, xor, slt, sltu, and, na, lui = newElement()
+//   val addw, sllw, sraw, srlw, subw = newElement()
+//   val jal, jalr = newElement()
+//   val beq, bne, bge, bgeu, blt, bltu = newElement()
+//   val auipc = newElement()
+//
+// }
 
 case class Decoder(stage: CtrlLink) extends Area {
   import DecodeTable._

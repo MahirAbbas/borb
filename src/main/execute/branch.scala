@@ -3,7 +3,6 @@ package borb.execute
 import spinal.core._
 import spinal.lib._
 import spinal.lib.misc.pipeline._
-import borb.frontend.AluOp
 import borb.LsuL1.PC
 import borb.LsuL1.JumpCmd
 // import borb.dispatch.SrcPlugin.IMMED

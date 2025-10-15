@@ -1,7 +1,7 @@
 import spinal.core._
 import spinal.core.sim._
 import spinal.lib.misc.pipeline._
-import borb.frontend.{Decoder, AluOp, ExecutionUnitEnum, REGFILE, Imm_Select, YESNO}
+import borb.frontend.{Decoder, ExecutionUnitEnum, REGFILE, Imm_Select, YESNO}
 import borb.frontend.DecodeTable
 import scala.util.Random
 import borb.common.MicroCode

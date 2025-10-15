@@ -10,14 +10,14 @@ import borb.frontend.Decoder.INSTRUCTION
 import borb.memory._
 import spinal.core.sim._
 
-object Fetch {
+object Fetch extends AreaObject {
   val PC_delayed = Payload(UInt(64 bits))
 }
 
 case class Fetch(stage: CtrlLink,addressWidth: Int,dataWidth: Int) extends Area {
   import Fetch._
   val io = new Bundle {
-    val readCmd = ((new RamFetchBus(addressWidth, dataWidth, idWidth = 16)))
+    val readCmd = new RamFetchBus(addressWidth, dataWidth, idWidth = 16)
   }
 
   // val waitingForRsp = Reg(Bool()) init False

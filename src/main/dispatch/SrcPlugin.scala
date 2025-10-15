@@ -46,11 +46,15 @@ case class IMM(instruction: Bits) extends Area {
   u_sext_pub := u_sext
 }
 
+object SrcPlugin extends AreaObject {
+  val RS1, RS2 = Payload(Bits(64 bits))
+
+}
 case class SrcPlugin(stage: CtrlLink) extends Area {
+  import SrcPlugin._
 
   import spinal.core.sim._
 
-  val RS1, RS2 = Payload(Bits(64 bits))
   val IMM = Payload(Bits(64 bits))
   val immsel = new stage.Area {
     val sext = Bits(64 bits).simPublic()
@@ -72,16 +76,15 @@ case class SrcPlugin(stage: CtrlLink) extends Area {
   import borb.frontend.REGFILE._
 
   val regfile = new IntRegFile(dataWidth = 64)
-  regfile.newRead()
-  regfile.newRead()
 
   val rs1Reader = master(new RegFileRead())
   val rs2Reader = master(new RegFileRead())
 
-  regfile.io.reads(0) <> rs1Reader
-  regfile.io.reads(1) <> rs2Reader
-
   val regfileread = new stage.Area {
+    val regfile = new IntRegFile(dataWidth = 64)
+    rs1Reader <> regfile.io.reader
+    rs2Reader <> regfile.io.reader
+
     rs1Reader.valid.assignDontCare()
     rs2Reader.valid.assignDontCare()
     when(RS1TYPE === RSTYPE.RS_INT) {
@@ -103,7 +106,7 @@ case class SrcPlugin(stage: CtrlLink) extends Area {
       RDTYPE.RD_INT -> rs1Reader.data
     )
     down(RS2) := up(RS2TYPE).muxDc(
-      RDTYPE.RD_INT -> rs1Reader.data
+      RDTYPE.RD_INT -> rs2Reader.data
     )
     IMM := immsel.sext
   }

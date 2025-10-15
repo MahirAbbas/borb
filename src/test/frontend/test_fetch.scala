@@ -9,7 +9,6 @@ import spinal.lib._
 import spinal.lib.sim._
 import borb.memory._
 import borb.fetch.PC
-import borb.frontend.AluOp.add
 import borb.frontend.Decoder.INSTRUCTION
 
 case class frontEnd() extends Component {

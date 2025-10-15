@@ -9,7 +9,7 @@ import spinal.lib.misc.pipeline._
 import borb.frontend.Decoder._
 import borb.frontend.Decoder
 import borb.frontend.ExecutionUnitEnum
-import borb.frontend.AluOp
+// import borb.frontend.AluOp
 import borb.LsuL1.PC
 
 // object Dispatch extends AreaObject {
@@ -73,12 +73,12 @@ case class HazardChecker(hzRange: Seq[CtrlLink]) extends Area {
       ) === (borb.frontend.REGFILE.RDTYPE.RD_INT)
   )
 
-  // isRs1Haz.zipWithIndex.foreach(e => hzRange(e._2).haltWhen(e._1))
+  isRs1Haz.zipWithIndex.foreach(e => hzRange(e._2).haltWhen(e._1))
   hzRange.head.haltWhen(isRs1Haz.reduce(_ || _)).simPublic()
-  // when (isRs1Haz.reduce(_ || _) simPublic()) {
-  // hzRange.head.haltIt()
-  // hzRange.head.isReady := False
-  // }
+  when (isRs1Haz.reduce(_ || _).simPublic()) {
+  hzRange.head.haltIt()
+  hzRange.head.isReady := False
+  }
 
   val isRs2Haz = hzRange.tail.map(e =>
     (hzRange.head(RS2_ADDR) =/= 0) &&
@@ -88,7 +88,7 @@ case class HazardChecker(hzRange: Seq[CtrlLink]) extends Area {
       ) === (borb.frontend.REGFILE.RDTYPE.RD_INT)
   )
 
-  // isRs2Haz.zipWithIndex.foreach(e => hzRange(e._2).haltWhen(e._1))
+  isRs2Haz.zipWithIndex.foreach(e => hzRange(e._2).haltWhen(e._1))
 
   when(isRs2Haz.reduce(_ || _).simPublic()) {
     hzRange.head.haltIt()

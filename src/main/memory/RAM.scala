@@ -17,21 +17,8 @@ case class RamFetchRsp(dataWidth: Int, addressWidth: Int, idWidth: Int)
 }
 case class RamFetchBus(addressWidth: Int, dataWidth: Int, idWidth: Int)
     extends Bundle {
-  val cmd = Stream(RamFetchCmd(addressWidth, idWidth))
-  val rsp = Stream(RamFetchRsp(dataWidth, addressWidth, idWidth))
-
-  def <<(that: Stream[RamFetchCmd]) = {
-    that.valid := this.cmd.valid
-    that.payload := this.cmd.payload
-    this.cmd.ready := that.ready
-  }
-
-  def >>(that: Stream[RamFetchRsp]) = {
-    this.rsp.valid := that.valid
-    this.rsp.payload := that.payload
-    this.rsp.ready := that.ready
-
-  }
+  val cmd = master(Stream(RamFetchCmd(addressWidth, idWidth)))
+  val rsp = slave(Stream(RamFetchRsp(dataWidth, addressWidth, idWidth)))
 }
 case class RamWriteCmd(addressWidth: Int, dataWidth: Int) extends Bundle {
   val address = UInt(addressWidth bits)
@@ -41,22 +28,8 @@ case class RamWriteRsp() extends Bundle {
   val success = Bool()
 }
 case class RamWriteBus(addressWidth: Int, dataWidth: Int) extends Bundle {
-  val cmd = Stream(RamWriteCmd(addressWidth, dataWidth))
-  val rsp = Stream(RamWriteRsp())
-}
-
-class RamReadBus(dataWidth: Int = 64, addressWidth: Int = 64)
-    extends Bundle
-    with IMasterSlave {
-  val address = UInt(addressWidth bits)
-  val data = Bits(dataWidth bits)
-  val valid = Bool()
-  val ready = Bool()
-
-  override def asMaster() = {
-    in(data, ready)
-    out(valid, address)
-  }
+  val cmd = master(Stream(RamWriteCmd(addressWidth, dataWidth)))
+  val rsp = slave(Stream(RamWriteRsp()))
 }
 
 class UnifiedRam(addressWidth: Int, dataWidth: Int, idWidth: Int)
@@ -68,16 +41,8 @@ class UnifiedRam(addressWidth: Int, dataWidth: Int, idWidth: Int)
   // val read = (slave(new RamReadBus()))
 
   val io = new Bundle {
-    val reads = (new RamFetchBus(addressWidth, dataWidth, idWidth))
-    in(reads.cmd)
-    out(reads.cmd.ready)
-    out(reads.rsp)
-    in(reads.rsp.ready)
+    val reads = new RamFetchBus(addressWidth, dataWidth, idWidth)
     // val writes = new RamWriteBus(addressWidth, dataWidth)
-    // in(writes.cmd)
-    // out(writes.cmd.ready)
-    // out(writes.rsp)
-    // in(writes.rsp.ready)
   }
 
   val memSize = 16 KiB

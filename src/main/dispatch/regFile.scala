@@ -34,36 +34,45 @@ object IntRegFile extends AreaObject {
 
 case class IntRegFile(dataWidth: Int) extends Component {
 
-  val readers: ArrayBuffer[RegFileRead] = ???
-  val writers: ArrayBuffer[RegFileWrite] = ???
-
-  def newRead() = {
-    readers += new RegFileRead()
-  }
-  def newWrite() = {
-    writers += new RegFileWrite()
-  }
+  // val readers: ArrayBuffer[RegFileRead] = ArrayBuffer(RegFileRead())
+  // val writers: ArrayBuffer[RegFileWrite] = ArrayBuffer(RegFileWrite())
+  //
+  // def newRead() = {
+  //   readers += new RegFileRead()
+  // }
+  // def newWrite() = {
+  //   writers += new RegFileWrite()
+  // }
+  //
+  // val io = new Bundle {
+  //   val reads = Vec(readers.map(e => slave(new RegFileRead())))
+  //   val writes = Vec(writers.map(e => slave(new RegFileWrite())))
+  // }
 
   val io = new Bundle {
-    val reads = Vec(readers.map(e => slave(new RegFileRead())))
-    val writes = Vec(writers.map(e => slave(new RegFileWrite())))
+    val reader = slave(new RegFileRead())
+    val writer = slave(new RegFileWrite())
   }
-
   val mem = Mem.fill(32)(Bits(dataWidth bits))
 
-  // Read logic
-  for (port <- io.reads) {
-    when(port.address === 0) {
-      port.data := 0
-    } otherwise {
-      port.data := mem.readAsync(port.address)
-    }
-  }
+  io.reader.data := mem.readSync(address = io.reader.address, enable = io.reader.valid)
 
-  // Write logic
-  for (w <- io.writes) {
-    when(w.valid && w.address =/= 0) {
-      mem.write(w.address, w.data)
-    }
-  }
+  mem.write(address = io.writer.address, enable = io.writer.valid, data = io.writer.data)
+
+
+  // Read logic
+  // for (port <- io.reads) {
+  //   when(port.address === 0) {
+  //     port.data := 0
+  //   } otherwise {
+  //     port.data := mem.readAsync(port.address)
+  //   }
+  // }
+  //
+  // // Write logic
+  // for (w <- io.writes) {
+  //   when(w.valid && w.address =/= 0) {
+  //     mem.write(w.address, w.data)
+  //   }
+  // }
 }
